@@ -5,7 +5,6 @@ from opulent_pandas.error import InvalidDataError
 
 class BaseValidator(object):
     """Base validator object"""
-# TODO: basevalidator should have a 'validate' function
 
 
 class TypeValidator(BaseValidator):
@@ -65,4 +64,3 @@ class SetMemberValidator(BaseValidator):
     def validate(self, df_column: pd.Series):
         if not df_column.isin(self.values).all():
             raise InvalidDataError("Value found outside of defined set.")
-
