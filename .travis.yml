@@ -1,0 +1,15 @@
+language: python
+python:
+  - "3.6"
+jobs:
+  include:
+    - stage: linting
+      install:
+        - pip install -e .[lint]
+      script:
+        - flake8
+    - stage: tests
+      install:
+        - pip install -e .[test]
+      script:
+        - pytest tests/
