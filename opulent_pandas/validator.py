@@ -1,6 +1,6 @@
 import pandas as pd
 
-from opulent_pandas.error import *
+from opulent_pandas.error import InvalidTypeError, RangeError, SetMemberError, ValueLengthError
 
 
 class BaseValidator(object):
