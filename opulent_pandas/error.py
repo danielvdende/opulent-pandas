@@ -17,3 +17,19 @@ class InvalidDataError(Error):
     """
     Error indicating the data is not valid in some way.
     """
+
+
+class InvalidTypeError(InvalidDataError):
+    """"""
+
+
+class RangeError(InvalidDataError):
+    """"""
+
+
+class ValueLengthError(InvalidDataError):
+    """"""
+
+
+class SetMemberError(InvalidDataError):
+    """"""

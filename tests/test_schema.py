@@ -4,7 +4,7 @@ import unittest
 from opulent_pandas.column import Required, Optional
 from opulent_pandas.error import InvalidDataError, MissingColumnError
 from opulent_pandas.schema import Schema
-from opulent_pandas.validator import RangeValidator
+from opulent_pandas.validator import RangeValidator, TypeValidator
 
 
 class SchemaTest(unittest.TestCase):
@@ -24,7 +24,7 @@ class SchemaTest(unittest.TestCase):
         schema = Schema({
             Required('foo'): [],
             Required('bar'): [],
-            Required('baz'): []
+            Optional('baz'): []
         })
         try:
             schema.validate(self.data)
@@ -43,8 +43,9 @@ class SchemaTest(unittest.TestCase):
     def test_validation_exceeds_upper_range(self):
         schema = Schema({
             Required('foo'): [RangeValidator(min=0, max=3)],
-            Required('bar'): [RangeValidator(min=4, max=6)],
-            Required('baz'): [RangeValidator(min=7, max=8)]
+            Optional('bar'): [RangeValidator(min=4, max=6)],
+            Optional('baz'): [RangeValidator(min=7, max=8)],
+            Optional('qux'): [TypeValidator(str)]
         })
         with self.assertRaises(InvalidDataError):
             schema.validate(self.data)

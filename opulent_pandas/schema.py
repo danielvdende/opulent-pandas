@@ -1,6 +1,6 @@
 import pandas as pd
 
-from opulent_pandas.column import ColumnType, Required
+from opulent_pandas.column import ColumnType, Required, Optional
 from opulent_pandas.error import MissingColumnError
 
 
@@ -17,9 +17,11 @@ class Schema(object):
         self.check_column_presence(df)
 
         # now check any other restrictions on those columns
+        # TODO: need to split out required vs optional
         for col, validators in self.schema.items():
-            for validator in validators:
-                validator.validate(df[col.column_name])
+            if isinstance(col, Required) or (isinstance(col, Optional) and col.column_name in list(df)):
+                for validator in validators:
+                    validator.validate(df[col.column_name])
 
     def check_column_presence(self, df: pd.DataFrame):
         # check if all Required columns are there

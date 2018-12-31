@@ -1,7 +1,7 @@
 import pandas as pd
 import unittest
 
-from opulent_pandas.error import InvalidDataError
+from opulent_pandas.error import *
 from opulent_pandas.validator import SetMemberValidator, TypeValidator, RangeValidator, ValueLengthValidator
 
 
@@ -17,12 +17,12 @@ class TypeValidatorTest(unittest.TestCase):
 
     def test_all_invalid_types(self):
         data = pd.Series([1, 2, 3])
-        with self.assertRaises(InvalidDataError):
+        with self.assertRaises(TypeError):
             self.validator.validate(data)
 
     def test_some_invalid_types(self):
         data = pd.Series(["hello", "there", 3])
-        with self.assertRaises(InvalidDataError):
+        with self.assertRaises(TypeError):
             self.validator.validate(data)
 
 
