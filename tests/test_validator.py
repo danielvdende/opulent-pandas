@@ -1,8 +1,9 @@
 import pandas as pd
 import unittest
 
-from opulent_pandas.error import InvalidDataError, InvalidTypeError
-from opulent_pandas.validator import SetMemberValidator, TypeValidator, RangeValidator, ValueLengthValidator
+from opulent_pandas.error import InvalidDataError, InvalidTypeError, AnyInvalidError
+from opulent_pandas.validator import (All, Any, SetMemberValidator, TypeValidator, RangeValidator,
+                                      ValueLengthValidator)
 
 
 class TypeValidatorTest(unittest.TestCase):
@@ -77,3 +78,63 @@ class SetMemberValidatorTest(unittest.TestCase):
         data = pd.Series(['super', 'bad', 'values'])
         with self.assertRaises(InvalidDataError):
             self.validator.validate(data)
+
+
+class AllValidatorTest(unittest.TestCase):
+    single_group_validator = All([SetMemberValidator(('foo', 'bar')), ValueLengthValidator(min_length=3)])
+    nested_group_validator = All([RangeValidator(min=0), All([TypeValidator(valid_type=int),
+                                                              RangeValidator(max=3)])])
+
+    def test_all_valid_single_group(self):
+        data = pd.Series(['foo', 'foo', 'bar'])
+        try:
+            self.single_group_validator.validate(data)
+        except InvalidDataError as e:
+            self.fail(f'Validation unexpectedly failed: {e}')
+
+    def test_some_invalid_single_group(self):
+        data = pd.Series(['foo', 'bar', 'baz'])
+        with self.assertRaises(InvalidDataError):
+            self.single_group_validator.validate(data)
+
+    def test_all_valid_nested_group(self):
+        data = pd.Series([1, 2, 1, 3])
+        try:
+            self.nested_group_validator.validate(data)
+        except InvalidDataError as e:
+            self.fail(f'Validation unexpectedly failed: {e}')
+
+    def test_some_invalid_nested_group(self):
+        data = pd.Series([1, 2, 1, 4])
+        with self.assertRaises(InvalidDataError):
+            self.nested_group_validator.validate(data)
+
+
+class AnyValidatorTest(unittest.TestCase):
+    single_group_validator = Any([SetMemberValidator(('foo', 'bar')), ValueLengthValidator(min_length=2)])
+    nested_group_validator = Any([TypeValidator(str), All([TypeValidator(valid_type=int),
+                                                           RangeValidator(min=0)])])
+
+    def test_all_valid_single_group(self):
+        data = pd.Series(['foo', 'foo', 'bar', 'fa'])
+        try:
+            self.single_group_validator.validate(data)
+        except AnyInvalidError as e:
+            self.fail(f'Validation unexpectedly failed: {e}')
+
+    def test_some_invalid_single_group(self):
+        data = pd.Series(['foo', 'bar', 'baz', 'f'])
+        with self.assertRaises(AnyInvalidError):
+            self.single_group_validator.validate(data)
+
+    def test_all_valid_nested_group(self):
+        data = pd.Series([1, 2, 1, 3])
+        try:
+            self.nested_group_validator.validate(data)
+        except AnyInvalidError as e:
+            self.fail(f'Validation unexpectedly failed: {e}')
+
+    def test_some_invalid_nested_group(self):
+        data = pd.Series([1, 2, 1, 4, 'foobar'])
+        with self.assertRaises(AnyInvalidError):
+            self.nested_group_validator.validate(data)

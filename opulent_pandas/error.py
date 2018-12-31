@@ -1,3 +1,5 @@
+from typing import List
+
 
 class Error(Exception):
     """
@@ -5,6 +7,14 @@ class Error(Exception):
     """
     def __init__(self, msg):
         self.msg = msg
+
+
+class GroupError(Error):
+    """
+    Base exception class for group errors
+    """
+    def __init__(self, errors: List[Error]):
+        self.errors = errors
 
 
 class MissingColumnError(Error):
@@ -32,4 +42,8 @@ class ValueLengthError(InvalidDataError):
 
 
 class SetMemberError(InvalidDataError):
+    """"""
+
+
+class AnyInvalidError(GroupError):
     """"""

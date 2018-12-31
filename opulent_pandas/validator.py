@@ -1,10 +1,47 @@
 import pandas as pd
 
-from opulent_pandas.error import InvalidTypeError, RangeError, SetMemberError, ValueLengthError
+from opulent_pandas.error import (AnyInvalidError, Error, InvalidTypeError, RangeError, SetMemberError,
+                                  ValueLengthError)
+from typing import List
 
 
 class BaseValidator(object):
     """Base validator object"""
+
+
+class GroupValidator(BaseValidator):
+    """Group validator base object, that can be used to combine multiple validators"""
+
+
+class Any(GroupValidator):
+    def __init__(self, validators: List[BaseValidator]):
+        self.validators = validators
+
+    def validate(self, df_column: pd.Series):
+        errors = []
+        for sub_validator in self.validators:
+            try:
+                sub_validator.validate(df_column)
+                # if no exception comes from this, we've found a passing condition
+                print("valid validator found", sub_validator)
+                return
+            except Error as e:
+                # append the error to the list
+                errors.append(e)
+
+        if len(errors) != 0:
+            # some error happened
+            raise AnyInvalidError(errors)
+
+
+class All(GroupValidator):
+    def __init__(self, validators: List[BaseValidator]):
+        self.validators = validators
+
+    def validate(self, df_column: pd.Series):
+        for sub_validator in self.validators:
+            # if any validator fails, an error will be raised and thrown.
+            sub_validator.validate(df_column)
 
 
 class TypeValidator(BaseValidator):
