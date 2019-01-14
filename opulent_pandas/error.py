@@ -47,3 +47,7 @@ class SetMemberError(InvalidDataError):
 
 class AnyInvalidError(GroupError):
     """"""
+
+
+class MissingTimezoneError(InvalidDataError):
+    """"""

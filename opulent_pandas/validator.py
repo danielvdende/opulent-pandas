@@ -1,7 +1,7 @@
 import pandas as pd
 
-from opulent_pandas.error import (AnyInvalidError, Error, InvalidTypeError, RangeError, SetMemberError,
-                                  ValueLengthError)
+from opulent_pandas.error import (AnyInvalidError, Error, InvalidTypeError, MissingTimezoneError, RangeError,
+                                  SetMemberError, ValueLengthError)
 from typing import List
 
 
@@ -107,3 +107,13 @@ class SetMemberValidator(BaseValidator):
     def validate(self, df_column: pd.Series):
         if not df_column.isin(self.values).all():
             raise SetMemberError(f"Value found outside of defined set. Allowed: {self.values}")
+
+
+class TimezoneValidator(BaseValidator):
+    """
+    Checks that all values in the dataframe column have timezone information
+    TODO: extend to allow required timezone as a parameter, e.g. check that the timezone is correct
+    """
+    def validate(self, df_column: pd.Series):
+        if not (df_column.apply(lambda x: x.tz is not None)).all():
+            raise MissingTimezoneError(f"Non-timezone-aware dates found.")

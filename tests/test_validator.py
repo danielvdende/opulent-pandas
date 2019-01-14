@@ -1,9 +1,9 @@
 import pandas as pd
 import unittest
 
-from opulent_pandas.error import InvalidDataError, InvalidTypeError, AnyInvalidError
-from opulent_pandas.validator import (All, Any, SetMemberValidator, TypeValidator, RangeValidator,
-                                      ValueLengthValidator)
+from opulent_pandas.error import InvalidDataError, InvalidTypeError, AnyInvalidError, MissingTimezoneError
+from opulent_pandas.validator import (All, Any, SetMemberValidator, TimezoneValidator, TypeValidator,
+                                      RangeValidator, ValueLengthValidator)
 
 
 class TypeValidatorTest(unittest.TestCase):
@@ -138,3 +138,24 @@ class AnyValidatorTest(unittest.TestCase):
         data = pd.Series([1, 2, 1, 4, 'foobar'])
         with self.assertRaises(AnyInvalidError):
             self.nested_group_validator.validate(data)
+
+
+class TimezoneValidatorTest(unittest.TestCase):
+    validator = TimezoneValidator()
+
+    def test_timezone_aware_date(self):
+        date_field = pd.to_datetime("28-08-1990 12:22", format="%d-%m-%Y %H:%M")\
+            .tz_localize("Europe/Amsterdam")
+        valid_data = pd.Series([date_field])
+
+        try:
+            self.validator.validate(valid_data)
+        except InvalidDataError as e:
+            self.fail(f'Validation unexpectedly failed: {e}')
+
+    def test_timezone_unaware_date(self):
+        date_field = pd.to_datetime("28-08-1990 12:22", format="%d-%m-%Y %H:%M")
+        invalid_data = pd.Series([date_field])
+
+        with self.assertRaises(MissingTimezoneError):
+            self.validator.validate(invalid_data)
