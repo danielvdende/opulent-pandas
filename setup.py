@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="opulent-pandas",
-    version='0.0.2',
+    version='0.0.3',
     description="A package to validate the schema of a pandas dataframe",
     author="Daniel van der Ende",
     long_description=long_description,
