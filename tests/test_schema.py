@@ -1,15 +1,24 @@
 import pandas as pd
 import unittest
 
-from opulent_pandas.column import Required, Optional
-from opulent_pandas.error import InvalidDataError, MissingColumnError
-from opulent_pandas.schema import Schema
-from opulent_pandas.validator import RangeValidator, TypeValidator
+from opulent_pandas import (
+    InvalidDataError, InvalidTypeError, MissingColumnError, Optional, RangeValidator, Required, Schema,
+    TypeValidator
+)
 
 
 class SchemaTest(unittest.TestCase):
 
     data = pd.DataFrame({'foo': [1, 2, 3], 'bar': [4, 5, 6], 'baz': [7, 8, 9]})
+
+    def test_invalid_type_error(self):
+        schema = Schema({
+            Required('foo'): [TypeValidator(str)],
+            Required('bar'): [],
+            Required('baz'): []
+        })
+        with self.assertRaises(InvalidTypeError):
+            schema.validate(self.data)
 
     def test_error_thrown_for_missing_columns(self):
         schema = Schema({
@@ -17,8 +26,9 @@ class SchemaTest(unittest.TestCase):
             Required('bar'): [],
             Required('qux'): []
         })
-        with self.assertRaises(MissingColumnError):
+        with self.assertRaises(MissingColumnError) as exc_info:
             schema.validate(self.data)
+        self.assertEqual(exc_info.exception.msg, "Columns missing: {'baz'}")
 
     def test_validation_passes_with_all_columns(self):
         schema = Schema({

@@ -26,7 +26,8 @@ class Schema(object):
     def check_column_presence(self, df: pd.DataFrame):
         # check if all Required columns are there
         if not set(df).issuperset(self.get_column_names(Required)):
-            raise MissingColumnError("Columns missing")
+            missing_columns = set(df) - self.get_column_names(Required)
+            raise MissingColumnError(f"Columns missing: {missing_columns}")
 
     def get_column_names(self, column_type: ColumnType) -> set:
         columns = set()

@@ -1,9 +1,9 @@
 import pandas as pd
 import unittest
 
-from opulent_pandas.error import InvalidDataError, InvalidTypeError, AnyInvalidError, MissingTimezoneError
-from opulent_pandas.validator import (All, Any, SetMemberValidator, TimezoneValidator, TypeValidator,
-                                      RangeValidator, ValueLengthValidator)
+from opulent_pandas import (All, Any, AnyInvalidError, InvalidDataError, InvalidTypeError,
+                            MissingTimezoneError, SetMemberValidator, TimezoneValidator, TypeValidator,
+                            RangeValidator, ValueLengthValidator)
 
 
 class TypeValidatorTest(unittest.TestCase):
