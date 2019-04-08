@@ -19,7 +19,9 @@ class Schema(object):
         # now check any other restrictions on those columns
         # TODO: need to split out required vs optional
         for col, validators in self.schema.items():
-            if isinstance(col, Required) or (isinstance(col, Optional) and col.column_name in list(df)):
+            if isinstance(col, Required) or (
+                isinstance(col, Optional) and col.column_name in list(df)
+            ):
                 for validator in validators:
                     validator.validate(df[col.column_name])
 
