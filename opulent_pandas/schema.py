@@ -19,14 +19,17 @@ class Schema(object):
         # now check any other restrictions on those columns
         # TODO: need to split out required vs optional
         for col, validators in self.schema.items():
-            if isinstance(col, Required) or (isinstance(col, Optional) and col.column_name in list(df)):
+            if isinstance(col, Required) or (
+                isinstance(col, Optional) and col.column_name in list(df)
+            ):
                 for validator in validators:
                     validator.validate(df[col.column_name])
 
     def check_column_presence(self, df: pd.DataFrame):
         # check if all Required columns are there
         if not set(df).issuperset(self.get_column_names(Required)):
-            raise MissingColumnError("Columns missing")
+            missing_columns = set(df) - self.get_column_names(Required)
+            raise MissingColumnError(f"Columns missing: {missing_columns}")
 
     def get_column_names(self, column_type: ColumnType) -> set:
         columns = set()

@@ -1,7 +1,14 @@
 import pandas as pd
 
-from opulent_pandas.error import (AnyInvalidError, Error, InvalidTypeError, MissingTimezoneError, RangeError,
-                                  SetMemberError, ValueLengthError)
+from opulent_pandas.error import (
+    AnyInvalidError,
+    Error,
+    InvalidTypeError,
+    MissingTimezoneError,
+    RangeError,
+    SetMemberError,
+    ValueLengthError,
+)
 from typing import List
 
 
@@ -54,7 +61,10 @@ class TypeValidator(BaseValidator):
 
     def validate(self, df_column: pd.Series):
         if not (df_column.apply(type) == self.valid_type).all():
-            raise InvalidTypeError(f"Invalid data type found. Required: {self.valid_type}")
+            raise InvalidTypeError(
+                f"Invalid data type found for column: {df_column.name}. "
+                f"Required type: {self.valid_type}"
+            )
 
 
 class RangeValidator(BaseValidator):
@@ -69,10 +79,16 @@ class RangeValidator(BaseValidator):
     def validate(self, df_column: pd.Series):
         if self.min:
             if not (df_column >= self.min).all():
-                raise RangeError(f"Value found smaller than enforced minimum. Required minimum: {self.min}")
+                raise RangeError(
+                    f"Value found smaller than enforced minimum for column: {df_column.name}. "
+                    f"Required minimum: {self.min}"
+                )
         if self.max:
             if not (df_column <= self.max).all():
-                raise RangeError(f"Value found larger than enforced maximum. Required maximum: {self.max}")
+                raise RangeError(
+                    f"Value found larger than enforced maximum for column: {df_column.name}. "
+                    f"Required maximum: {self.max}"
+                )
 
 
 class ValueLengthValidator(BaseValidator):
@@ -88,12 +104,16 @@ class ValueLengthValidator(BaseValidator):
     def validate(self, df_column: pd.Series):
         if self.min_length:
             if not (df_column.apply(len) >= self.min_length).all():
-                raise ValueLengthError(f"Value found with length smaller than enforced minimum length. "
-                                       f"Minimum Length: {self.min_length}")
+                raise ValueLengthError(
+                    f"Value found with length smaller than enforced minimum length for "
+                    f"column: {df_column.name}. Minimum Length: {self.min_length}"
+                )
         if self.max_length:
             if not (df_column.apply(len) <= self.max_length).all():
-                raise ValueLengthError(f"Value found with length larger than enforced maximum length. "
-                                       f"Maximum Length: {self.max_length}")
+                raise ValueLengthError(
+                    f"Value found with length larger than enforced maximum length for "
+                    f"column: {df_column.name}. Maximum Length: {self.max_length}"
+                )
 
 
 class SetMemberValidator(BaseValidator):
@@ -106,7 +126,10 @@ class SetMemberValidator(BaseValidator):
 
     def validate(self, df_column: pd.Series):
         if not df_column.isin(self.values).all():
-            raise SetMemberError(f"Value found outside of defined set. Allowed: {self.values}")
+            raise SetMemberError(
+                f"Value found outside of defined set for column: {df_column.name}. "
+                f"Allowed: {self.values}"
+            )
 
 
 class TimezoneValidator(BaseValidator):
@@ -114,6 +137,9 @@ class TimezoneValidator(BaseValidator):
     Checks that all values in the dataframe column have timezone information
     TODO: extend to allow required timezone as a parameter, e.g. check that the timezone is correct
     """
+
     def validate(self, df_column: pd.Series):
         if not (df_column.apply(lambda x: x.tz is not None)).all():
-            raise MissingTimezoneError(f"Non-timezone-aware dates found.")
+            raise MissingTimezoneError(
+                f"Non-timezone-aware dates found for column: {df_column.name}."
+            )
