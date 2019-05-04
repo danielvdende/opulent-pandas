@@ -29,7 +29,7 @@ class SchemaTest(unittest.TestCase):
             schema.validate(self.data)
         self.assertEqual(
             exc_info.exception.msg,
-            "Invalid data type found for column: foo.Required type: " "<class 'str'>",
+            "Invalid data type found for column: foo. Required type: " "<class 'str'>",
         )
 
     def test_error_thrown_for_missing_columns(self):
@@ -57,7 +57,7 @@ class SchemaTest(unittest.TestCase):
             schema.validate(self.data)
         self.assertEqual(
             exc_info.exception.msg,
-            "Value found smaller than enforced minimum for column: baz."
+            "Value found smaller than enforced minimum for column: baz. "
             "Required minimum: 8",
         )
 
@@ -74,7 +74,7 @@ class SchemaTest(unittest.TestCase):
             schema.validate(self.data)
         self.assertEqual(
             exc_info.exception.msg,
-            "Value found larger than enforced maximum for column: baz."
+            "Value found larger than enforced maximum for column: baz. "
             "Required maximum: 8",
         )
 

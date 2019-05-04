@@ -62,7 +62,7 @@ class TypeValidator(BaseValidator):
     def validate(self, df_column: pd.Series):
         if not (df_column.apply(type) == self.valid_type).all():
             raise InvalidTypeError(
-                f"Invalid data type found for column: {df_column.name}."
+                f"Invalid data type found for column: {df_column.name}. "
                 f"Required type: {self.valid_type}"
             )
 
@@ -80,13 +80,13 @@ class RangeValidator(BaseValidator):
         if self.min:
             if not (df_column >= self.min).all():
                 raise RangeError(
-                    f"Value found smaller than enforced minimum for column: {df_column.name}."
+                    f"Value found smaller than enforced minimum for column: {df_column.name}. "
                     f"Required minimum: {self.min}"
                 )
         if self.max:
             if not (df_column <= self.max).all():
                 raise RangeError(
-                    f"Value found larger than enforced maximum for column: {df_column.name}."
+                    f"Value found larger than enforced maximum for column: {df_column.name}. "
                     f"Required maximum: {self.max}"
                 )
 
