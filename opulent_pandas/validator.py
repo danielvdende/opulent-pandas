@@ -139,7 +139,7 @@ class TimezoneValidator(BaseValidator):
     """
 
     def validate(self, df_column: pd.Series):
-        if not (df_column.apply(lambda x: x.tz is not None)).all():
+        if not df_column.dt.tz:
             raise MissingTimezoneError(
                 f"Non-timezone-aware dates found for column: {df_column.name}."
             )
